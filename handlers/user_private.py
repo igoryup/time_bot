@@ -13,8 +13,6 @@ from kbds.reply import get_keyboard
 
 from datetime import datetime, timedelta
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
 from string import Template
 
 class DeltaTemplate(Template):
@@ -31,8 +29,6 @@ def strfdelta(tdelta, fmt):
     return t.substitute(**d)
 
 start_times = {}
-
-scheduler = AsyncIOScheduler()
 
 user_private_router = Router()
 user_private_router.message.filter(ChatTypeFilter(["private"]))
