@@ -6,6 +6,7 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.strategy import FSMStrategy
 
 from dotenv import find_dotenv, load_dotenv
+print('load_dotenv')
 load_dotenv(find_dotenv())
 
 from handlers.user_private import user_private_router
@@ -15,10 +16,10 @@ from handlers.admin_private import admin_router
 from common.bot_cmds_list import private
 
 ALLOWED_UPDATES = ['message, edited_message']
-
+print('init_bot')
 bot = Bot(token=os.getenv('TOKEN'), parse_mode=ParseMode.HTML)
 bot.my_admins_list = []
-
+print('before_start')
 dp = Dispatcher()
 
 dp.include_router(user_private_router)
@@ -27,6 +28,7 @@ dp.include_router(admin_router)
 
 
 async def main():
+    print('start')
     await bot.delete_webhook(drop_pending_updates=True)
     # await bot.delete_my_commands(scope=types.BotCommandScopeAllPrivateChats())
     await bot.set_my_commands(commands=private, scope=types.BotCommandScopeAllPrivateChats())
