@@ -11,9 +11,12 @@ from filters.chat_types import ChatTypeFilter
 
 from kbds.reply import get_keyboard
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from string import Template
+
+msk_offset = timedelta(hours=3)
+msk_tz = timezone(msk_offset)
 
 class DeltaTemplate(Template):
     delimiter = "%"
@@ -59,7 +62,7 @@ async def begin_cmd(message: types.Message):
     if user_id in start_times:
         await message.reply(f"Вы уже отметились!")
     else:
-        start_times[user_id] = datetime.now()
+        start_times[user_id] = datetime.now(msk_tz)
         work_time = (start_times[user_id]).strftime("%H:%M:%S")
         await message.reply(f"Время начала работы зафиксировано:\n\n<b>{work_time}</b>", reply_markup=USER_EXT_KB)
         
@@ -68,7 +71,7 @@ async def check_cmd(message: types.Message):
     user_id = message.from_user.id    
     if user_id in start_times:
         start_time = start_times[user_id]
-        end_time = datetime.now()
+        end_time = datetime.now(msk_tz)
         duration = end_time - start_time
         work_time = strfdelta(duration, '%H:%M:%S')
         # await message.reply("Вы закончили работать.")
@@ -81,7 +84,7 @@ async def end_cmd(message: types.Message):
     user_id = message.from_user.id
     if user_id in start_times:
         start_time = start_times.pop(user_id)
-        end_time = datetime.now()
+        end_time = datetime.now(msk_tz)
         duration = end_time - start_time
         end_time = end_time.strftime("%H:%M:%S")
         work_time = strfdelta(duration, '%H:%M:%S')
