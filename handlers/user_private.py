@@ -67,13 +67,12 @@ async def begin_cmd(message: types.Message):
     else:
         start_times[user_id] = datetime.now(msk_tz)
         work_time = (start_times[user_id]).strftime("%H:%M:%S")
-        work_status = True
         await message.reply(f"Время начала работы зафиксировано:\n\n<b>{work_time}</b>", reply_markup=USER_EXT_KB)
 
-        # Задержка на несколько часов (например, 3 часа)
-        delay_hours = 3
+        # Задержка на 8 часов
+        delay_hours = 8
         delay_seconds = delay_hours * 3600
-        await asyncio.sleep(10)
+        await asyncio.sleep(delay_seconds)
         if user_id in start_times:
             await message.reply(f"Время прошло, пора бы домой!", reply_markup=USER_EXT_KB)
 
@@ -101,7 +100,6 @@ async def end_cmd(message: types.Message):
         end_time = end_time.strftime("%H:%M:%S")
         work_time = strfdelta(duration, '%H:%M:%S')
         # await message.reply("Вы закончили работать.")
-        work_status = False
         await message.reply(f"Рабочее время завершено.\n\nВремя окончания работы зафиксировано:\n\n<b>{end_time}</b>.\n\nВы проработали:\n\n<b>{work_time}</b>.", reply_markup=USER_KB)
     else:
         await message.reply("Время начала работы не было зафиксировано.")
