@@ -7,6 +7,8 @@ from aiogram.utils.formatting import (
     Bold,
 )  # Italic, as_numbered_list и тд
 
+import asyncio
+
 from filters.chat_types import ChatTypeFilter
 
 from kbds.reply import get_keyboard
@@ -65,6 +67,13 @@ async def begin_cmd(message: types.Message):
         start_times[user_id] = datetime.now(msk_tz)
         work_time = (start_times[user_id]).strftime("%H:%M:%S")
         await message.reply(f"Время начала работы зафиксировано:\n\n<b>{work_time}</b>", reply_markup=USER_EXT_KB)
+
+        # Задержка на несколько часов (например, 3 часа)
+        delay_hours = 3
+        delay_seconds = delay_hours * 3600
+        await asyncio.sleep(10)
+        await message.reply(f"Время прошло, пора бы домой!", reply_markup=USER_EXT_KB)
+
         
 @user_private_router.message(or_f(Command("Проверить время"), (F.text.lower() == "проверить время")))
 async def check_cmd(message: types.Message):
