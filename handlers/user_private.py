@@ -62,13 +62,14 @@ async def start_cmd(message: types.Message):
         reply_markup=USER_KB
     )
     user_id = message.from_user.id 
-    users_schedule[user_id] = common.WeeklySchedule()
+    sch = common.schedule.WeeklySchedule()
+    users_schedule[user_id] = sch
 
 @user_private_router.message(or_f(Command("Начать день"), (F.text.lower() == "начать день")))
 async def begin_cmd(message: types.Message):
     user_id = message.from_user.id    
     sched = users_schedule[user_id]
-    timestamp = common.getCurTime()
+    timestamp = common.schedule.getCurTime()
     sched.set_start_time_for_today(timestamp)
     work_time = timestamp.strftime("%H:%M:%S")
     await message.reply(f"Время начала работы зафиксировано:\n\n<b>{work_time}</b>", reply_markup=USER_EXT_KB)
@@ -84,9 +85,9 @@ async def check_cmd(message: types.Message):
     user_id = message.from_user.id    
     sched = users_schedule[user_id]
     start_time = sched.get_today_schedule()[0]
-    end_time = common.getCurTime()
+    end_time = common.schedule.getCurTime()
     duration = end_time - start_time
-    work_time = common.strfdelta(duration, '%H:%M:%S')
+    work_time = common.schedule.strfdelta(duration, '%H:%M:%S')
     await message.reply(f"На текущий момент Вы проработали:\n\n<b>{work_time}</b>.")
 
 @user_private_router.message(or_f(Command("Закончить день"), (F.text.lower() == "закончить день")))
@@ -94,9 +95,9 @@ async def end_cmd(message: types.Message):
     user_id = message.from_user.id
     sched = users_schedule[user_id]
     start_time = sched.get_today_schedule()[0]
-    end_time = common.getCurTime()
+    end_time = common.schedule.getCurTime()
     duration = end_time - start_time
-    sched.set_start_time_for_today(end_time)
+    sched.set_end_time_for_today(end_time)
     work_time = strfdelta(duration, '%H:%M:%S')
     # await message.reply("Вы закончили работать.")
     await message.reply(f"Рабочее время завершено.\n\nВремя окончания работы зафиксировано:\n\n<b>{end_time}</b>.\n\nВы проработали:\n\n<b>{work_time}</b>.", reply_markup=USER_KB)
@@ -122,12 +123,12 @@ async def check_cmd(message: types.Message):
     total = mon_dur + tue_dur + wed_dur + thu_dur + fri_dur + sat_dur + sun_dur
     total = strfdelta(total, '%H:%M:%S')
     text = f"За текущую неделю вы отработали {total}."
-    mon_time = f"Понедельник: {strfdelta(mon[1] - mon[0], '%H:%M:&S')}"
-    tue_time = f"Вторник: {strfdelta(tue[1] - tue[0], '%H:%M:&S')}"
-    wed_time = f"Среда: {strfdelta(wed[1] - wed[0], '%H:%M:&S')}"
-    thu_time = f"Четверг: {strfdelta(thu[1] - thu[0], '%H:%M:&S')}"
-    fri_time = f"Пятница: {strfdelta(fri[1] - fri[0], '%H:%M:&S')}"
-    sat_time = f"Суббота: {strfdelta(sat[1] - sat[0], '%H:%M:&S')}"
-    sun_time = f"Воскресенье: {strfdelta(sun[1] - sun[0], '%H:%M:&S')}"
-    text += mon_time + '\n' + tue_time + '\n' + wed_time + '\n' + thu_time + '\n' + fri_time + '\n' + sat_time + '\n' + sun_time
+    mon_time = f"Понедельник: {strfdelta(mon[1] - mon[0], '%H:%M:%S')}"
+    tue_time = f"Вторник: {strfdelta(tue[1] - tue[0], '%H:%M:%S')}"
+    wed_time = f"Среда: {strfdelta(wed[1] - wed[0], '%H:%M:%S')}"
+    thu_time = f"Четверг: {strfdelta(thu[1] - thu[0], '%H:%M:%S')}"
+    fri_time = f"Пятница: {strfdelta(fri[1] - fri[0], '%H:%M:%S')}"
+    sat_time = f"Суббота: {strfdelta(sat[1] - sat[0], '%H:%M:%S')}"
+    sun_time = f"Воскресенье: {strfdelta(sun[1] - sun[0], '%H:%M:%S')}"
+    text += '\n' + '\n' + mon_time + '\n' + tue_time + '\n' + wed_time + '\n' + thu_time + '\n' + fri_time + '\n' + sat_time + '\n' + sun_time
     await message.reply(text)

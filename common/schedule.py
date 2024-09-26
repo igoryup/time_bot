@@ -40,16 +40,16 @@ class WeeklySchedule:
 
     def get_today(self):
         # Получаем текущий день недели на английском
-        return datetime.datetime.today(msk_tz).strftime('%A')
+        return datetime.today().strftime('%A')
 
-    def get_schedule_for_day(self, day):
+    def get_schedule_for_day(self, day) -> datetime:
         # Получаем расписание для конкретного дня недели
-        return self.schedule.get(day, ("No data", "No data"))
+        return self.schedule.get(day, (getCurTime(), getCurTime()))
 
     def get_today_schedule(self):
         # Получаем расписание для текущего дня недели
         today = self.get_today()
-        return today, self.get_schedule_for_day(today)
+        return self.get_schedule_for_day(today)
 
     def set_start_time_for_today(self, start_time):
         # Устанавливаем время начала работы для текущего дня
