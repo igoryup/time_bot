@@ -25,7 +25,7 @@ def getCurTimeFormat():
     return datetime.now(msk_tz).strftime("%H:%M:%S")
 
 def getCurWeek():
-    return getCurTime().isocalendar()[1]
+    return datetime.now().isocalendar().week
 
 class WeeklySchedule:
     def __init__(self):
