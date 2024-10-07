@@ -26,12 +26,22 @@ class DeltaTemplate(Template):
     delimiter = "%"
 
 def strfdelta(tdelta, fmt):
+    # Получаем общее количество дней
     d = {"D": tdelta.days}
-    hours, rem = divmod(tdelta.seconds, 3600)
-    minutes, seconds = divmod(rem, 60)
-    d["H"] = '{:02d}'.format(hours)
-    d["M"] = '{:02d}'.format(minutes)
-    d["S"] = '{:02d}'.format(seconds)
+    
+    # Получаем общее количество часов, включая полные дни
+    total_seconds = tdelta.total_seconds()
+    hours = total_seconds // 3600  # Общее количество часов
+    rem_seconds = total_seconds % 3600
+    minutes = rem_seconds // 60
+    seconds = rem_seconds % 60
+    
+    # Форматируем значения для словаря
+    d["H"] = '{:d}'.format(int(hours))  # Часы без форматирования в 2 символа
+    d["M"] = '{:02d}'.format(int(minutes))
+    d["S"] = '{:02d}'.format(int(seconds))
+    
+    # Используем шаблон для замены
     t = DeltaTemplate(fmt)
     return t.substitute(**d)
 
@@ -63,12 +73,14 @@ async def start_cmd(message: types.Message):
     )
     user_id = message.from_user.id 
     sch = common.schedule.WeeklySchedule()
-    users_schedule[user_id] = sch
+    week = common.schedule.getCurWeek()
+    users_schedule[(user_id, week)] = sch
 
 @user_private_router.message(or_f(Command("Начать день"), (F.text.lower() == "начать день")))
 async def begin_cmd(message: types.Message):
-    user_id = message.from_user.id    
-    sched = users_schedule[user_id]
+    user_id = message.from_user.id   
+    week = common.schedule.getCurWeek() 
+    sched = users_schedule[(user_id, week)]
     timestamp = common.schedule.getCurTime()
     sched.set_start_time_for_today(timestamp)
     work_time = timestamp.strftime("%H:%M:%S")
@@ -93,19 +105,22 @@ async def check_cmd(message: types.Message):
 @user_private_router.message(or_f(Command("Закончить день"), (F.text.lower() == "закончить день")))
 async def end_cmd(message: types.Message):
     user_id = message.from_user.id
-    sched = users_schedule[user_id]
+    week = common.schedule.getCurWeek() 
+    sched = users_schedule[(user_id, week)]
     start_time = sched.get_today_schedule()[0]
     end_time = common.schedule.getCurTime()
     duration = end_time - start_time
     sched.set_end_time_for_today(end_time)
     work_time = strfdelta(duration, '%H:%M:%S')
+    end_time = strfdelta(end_time, '%H:%M:%S')
     # await message.reply("Вы закончили работать.")
     await message.reply(f"Рабочее время завершено.\n\nВремя окончания работы зафиксировано:\n\n<b>{end_time}</b>.\n\nВы проработали:\n\n<b>{work_time}</b>.", reply_markup=USER_KB)
 
 @user_private_router.message(or_f(Command("Отчет за неделю"), (F.text.lower() == "отчет за неделю")))
 async def check_cmd(message: types.Message):
     user_id = message.from_user.id
-    sched = users_schedule[user_id]
+    week = common.schedule.getCurWeek() 
+    sched = users_schedule[(user_id, week)]
     mon = sched.get_schedule_for_day("Monday")
     tue = sched.get_schedule_for_day("Tuesday")
     wed = sched.get_schedule_for_day("Wednesday")
