@@ -24,11 +24,14 @@ def getCurTime():
 def getCurTimeFormat():
     return datetime.now(msk_tz).strftime("%H:%M:%S")
 
+def getCurWeek():
+    return getCurTime().isocalendar()[1]
+
 class WeeklySchedule:
     def __init__(self):
         # Инициализируем расписание текущим временем для всех дней недели
         current_time = getCurTime()
-        self.current_week = 0
+        current_week = 0
         self.schedule = {
             "Monday": (current_time, current_time),
             "Tuesday": (current_time, current_time),
@@ -41,7 +44,7 @@ class WeeklySchedule:
 
 
     def update_week(self):
-        self.current_week = self.current_week + 1
+        self.current_week = getCurWeek()
 
     def get_week(self):
         return self.current_week
