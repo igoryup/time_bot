@@ -31,6 +31,7 @@ class WeeklySchedule:
     def __init__(self):
         # Инициализируем расписание текущим временем для всех дней недели
         current_time = getCurTime()
+        current_week = getCurWeek()
         self.schedule = {
             "Monday": (current_time, current_time),
             "Tuesday": (current_time, current_time),
@@ -40,6 +41,13 @@ class WeeklySchedule:
             "Saturday": (current_time, current_time),
             "Sunday": (current_time, current_time)
         }
+
+
+    def update_week(self):
+        self.current_week = getCurWeek()
+
+    def get_week(self):
+        return self.current_week
 
     def get_today(self):
         # Получаем текущий день недели на английском

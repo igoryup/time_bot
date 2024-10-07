@@ -73,14 +73,13 @@ async def start_cmd(message: types.Message):
     )
     user_id = message.from_user.id 
     sch = common.schedule.WeeklySchedule()
-    week = common.schedule.getCurWeek()
-    users_schedule[(user_id, week)] = sch
+    sch.update_week()
+    users_schedule[[user_id, sch.get_week()]] = sch
 
 @user_private_router.message(or_f(Command("Начать день"), (F.text.lower() == "начать день")))
 async def begin_cmd(message: types.Message):
     user_id = message.from_user.id   
-    week = common.schedule.getCurWeek() 
-    sched = users_schedule[(user_id, week)]
+    sched = users_schedule[[user_id, sched.get_week()]]
     timestamp = common.schedule.getCurTime()
     sched.set_start_time_for_today(timestamp)
     work_time = timestamp.strftime("%H:%M:%S")
@@ -95,7 +94,7 @@ async def begin_cmd(message: types.Message):
 @user_private_router.message(or_f(Command("Проверить время"), (F.text.lower() == "проверить время")))
 async def check_cmd(message: types.Message):
     user_id = message.from_user.id    
-    sched = users_schedule[user_id]
+    sched = users_schedule[[user_id, sched.get_week()]]
     start_time = sched.get_today_schedule()[0]
     end_time = common.schedule.getCurTime()
     duration = end_time - start_time
@@ -105,8 +104,7 @@ async def check_cmd(message: types.Message):
 @user_private_router.message(or_f(Command("Закончить день"), (F.text.lower() == "закончить день")))
 async def end_cmd(message: types.Message):
     user_id = message.from_user.id
-    week = common.schedule.getCurWeek() 
-    sched = users_schedule[(user_id, week)]
+    sched = users_schedule[[user_id, sched.get_week()]]
     start_time = sched.get_today_schedule()[0]
     end_time = common.schedule.getCurTime()
     duration = end_time - start_time
@@ -119,8 +117,7 @@ async def end_cmd(message: types.Message):
 @user_private_router.message(or_f(Command("Отчет за неделю"), (F.text.lower() == "отчет за неделю")))
 async def check_cmd(message: types.Message):
     user_id = message.from_user.id
-    week = common.schedule.getCurWeek() 
-    sched = users_schedule[(user_id, week)]
+    sched = users_schedule[[user_id, sched.get_week()]]
     mon = sched.get_schedule_for_day("Monday")
     tue = sched.get_schedule_for_day("Tuesday")
     wed = sched.get_schedule_for_day("Wednesday")
