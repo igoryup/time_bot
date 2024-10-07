@@ -67,15 +67,15 @@ USER_EXT_KB = get_keyboard(
 
 @user_private_router.message(CommandStart())
 async def start_cmd(message: types.Message):
-    await message.answer(
-        "Привет, я виртуальный помощник",
-        reply_markup=USER_KB
-    )
     user_id = message.from_user.id 
     sch = common.schedule.WeeklySchedule()
     sch.update_week()
     key = {user_id, common.schedule.getCurWeek()}
     users_schedule[key] = sch
+    await message.answer(
+        "Привет, я виртуальный помощник",
+        reply_markup=USER_KB
+    )
 
 @user_private_router.message(or_f(Command("Начать день"), (F.text.lower() == "начать день")))
 async def begin_cmd(message: types.Message):
