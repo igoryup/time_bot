@@ -31,7 +31,7 @@ class WeeklySchedule:
     def __init__(self):
         # Инициализируем расписание текущим временем для всех дней недели
         current_time = getCurTime()
-        current_week = 0
+        self.current_week = getCurWeek()
         self.schedule = {
             "Monday": (current_time, current_time),
             "Tuesday": (current_time, current_time),
