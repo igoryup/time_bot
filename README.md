@@ -6,3 +6,4 @@ restart
 docker compose update
 again
 daaamnb
+bad vps
