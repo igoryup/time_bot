@@ -7,3 +7,4 @@ docker compose update
 again
 daaamnb
 bad vps
+very bad vps
